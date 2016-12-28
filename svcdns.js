@@ -5,6 +5,8 @@ var util=require('util');
 var process=require('process');
 var execFile=require('child_process').execFile;
 var restify = require('restify');
+headers =  {'X-API-Key': 'F00FB000'};
+var client = restify.createJsonClient({url: 'http://127.0.0.1:8081/api/v1/servers/localhost'});
 var Docker = require('dockerode');
 var docker = new Docker();
 
@@ -12,7 +14,7 @@ var docker = new Docker();
 var server_pid = 0;
 
 
-// Start up haproxy
+// Start up server
 function restart_server(data){
 
         if (!data){
@@ -50,6 +52,24 @@ function respond(req, res, next) {
   res.send('hello ' + req.params.name);
   next();
 }
+
+function add_zone(zonename){
+   thezone = {};
+   ns = [];
+   thename = 'ns1.' + zonename;
+   ns.push(thename);
+   thezone.name = zonename;
+   thezone.kind = "Native";
+   thezone.masters = [];
+   thezone.nameservers = ns.
+   result = client.post('/zones', thezone, function(err, req, res){
+        console.log(util.inspect(err));
+        });
+}
+
+myIP = process.env.myIp;
+setTimeout(add_zone, 5000, "site.com");
+
 
 
 var server = restify.createServer();

@@ -29,8 +29,12 @@ RUN npm install
 
 # Bundle app source
 COPY . /usr/src/app
+COPY svcdns.sh /usr/src/app
 
+
+EXPOSE 8081
 EXPOSE 9053
 EXPOSE 53
-CMD ["node", "svcdns.js"]
+CMD ["ash","./svcdns.sh"]
+#CMD ["node", "svcdns.js"]
 #CMD ["/usr/sbin/pdns_server"]
