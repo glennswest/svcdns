@@ -1,0 +1,34 @@
+{
+  "name": "svcdns",
+  "version": "1.0.0",
+  "description": "Atomic MultiHost Router/Load Balancer",
+  "main": "dns.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glennswest/svcdns.git"
+  },
+  "keywords": [
+    "atomic",
+    "docker",
+    "dns"
+  ],
+  "author": "Glenn West",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/glennswest/svcdns/issues"
+  },
+  "homepage": "https://github.com/glennswest/dns",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "dockerode": "^2.3.1",
+    "fs": "0.0.1-security",
+    "fs-sync": "^1.0.3",
+    "log-timestamp": "^0.1.2",
+    "process": "^0.11.9",
+    "restify": "^4.3.0",
+    "util": "^0.10.3"
+  }
+}
