@@ -19,15 +19,16 @@ console.log("My IP is: " + myIP);
 var mymqtt  = mqtt.connect('mqtt://' + myIP);
 var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
 mymqtt.on('connect', function(){
-    mymqtt.subscribe('servicediscovery');
     mymqtt.publish('servicediscovery',JSON.stringify(servicedata));
+    mymqtt.subscribe('svcdnsadd');
     }
 )
 
 mymqtt.on('message', function(topic, messagestr){
         message = JSON.parse(messagestr);
+        console.log("MQTT: " + topic + " " + util.inspect(message));
         switch(topic){
-            case 'svcdns-add':
+            case 'svcdnsadd':
                   // Expect - {name: 'myservice.site.com',ip: "192.168.1.1", version: "v1"}
                   hostarray = message.name.split(".");
                   hostname = hostarray.shift();
