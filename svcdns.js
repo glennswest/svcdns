@@ -12,6 +12,7 @@ var docker = new Docker();
 
 var server_pid = 0;
 var myIP = process.env.myIP;
+console.log("My IP is: " + myIP);
 
 
 // Start up server
@@ -69,36 +70,41 @@ function add_zone(zonename){
         });
 }
 
-function add_host(zone,hostname,ip){
+function add_host(zone,hostname,ip,next){
 	thedata = {};
 	thehost = {};
 	therecord = {};
-	therecord.content = ip;
-	therecord.disabled = false;
+        thecontent = [];
+        thecontentrecord = {};
+        thecontentrecord.content = ip;
+        thecontentrecord.disabled = false;
+        thecontent[0] = thecontentrecord;
 	thehost.name = hostname;
 	thehost.type = "A";
 	thehost.ttl = 86400;
 	thehost.changetype="REPLACE";
-	thehost.records = [];
-	thehost.records.push(therecord);
+	thehost.records = thecontent;
 	thedata.rrsets = [];
-        thedata.rrsets.push(thehost);
+        thedata.rrsets[0] = thehost;
         console.log(util.inspect(thedata));
+        console.log(util.inspect(thehost.records));
         url = '/api/v1/servers/localhost/zones/' + zone;
+        console.log(util.inspect(url));
 	result = client.patch(url, thedata, function(err, req, res){
             console.log(util.inspect(err));
             });
-
+       return(next);
 }
 
 function do_base_setup()
 {
-	add_zone("site.com.");
-        add_host("site.com.","ns1.site.com.",myIP);
+var myIP = process.env.myIP;
+
+	add_zone("site.com.", null);
+        setTimeout(add_host,2000,"site.com.","ns1.site.com.",myIP,null);
 }
 
 
-myIP = process.env.myIp;
 setTimeout(do_base_setup, 4000);
 
 
