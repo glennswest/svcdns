@@ -5,13 +5,13 @@ var util=require('util');
 var process=require('process');
 var execFile=require('child_process').execFile;
 var restify = require('restify');
-headers =  {'X-API-Key': 'F00FB000'};
-var client = restify.createJsonClient({url: 'http://127.0.0.1:8081/api/v1/servers/localhost'});
+var client = restify.createJsonClient({url: 'http://127.0.0.1:8081',headers: {'X-API-Key': 'changeme'}});
 var Docker = require('dockerode');
 var docker = new Docker();
 
 
 var server_pid = 0;
+var myIP = process.env.myIP;
 
 
 // Start up server
@@ -54,6 +54,7 @@ function respond(req, res, next) {
 }
 
 function add_zone(zonename){
+
    thezone = {};
    ns = [];
    thename = 'ns1.' + zonename;
@@ -61,14 +62,44 @@ function add_zone(zonename){
    thezone.name = zonename;
    thezone.kind = "Native";
    thezone.masters = [];
-   thezone.nameservers = ns.
-   result = client.post('/zones', thezone, function(err, req, res){
+   thezone.nameservers = ns;
+
+   result = client.post('/api/v1/servers/localhost/zones', thezone, function(err, req, res){
         console.log(util.inspect(err));
         });
 }
 
+function add_host(zone,hostname,ip){
+	thedata = {};
+	thehost = {};
+	therecord = {};
+	therecord.content = ip;
+	therecord.disabled = false;
+	thehost.name = hostname;
+	thehost.type = "A";
+	thehost.ttl = 86400;
+	thehost.changetype="REPLACE";
+	thehost.records = [];
+	thehost.records.push(therecord);
+	thedata.rrsets = [];
+        thedata.rrsets.push(thehost);
+        console.log(util.inspect(thedata));
+        url = '/api/v1/servers/localhost/zones/' + zone;
+	result = client.patch(url, thedata, function(err, req, res){
+            console.log(util.inspect(err));
+            });
+
+}
+
+function do_base_setup()
+{
+	add_zone("site.com.");
+        add_host("site.com.","ns1.site.com.",myIP);
+}
+
+
 myIP = process.env.myIp;
-setTimeout(add_zone, 5000, "site.com");
+setTimeout(do_base_setup, 4000);
 
 
 
