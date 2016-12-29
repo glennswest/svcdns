@@ -8,11 +8,39 @@ var restify = require('restify');
 var client = restify.createJsonClient({url: 'http://127.0.0.1:8081',headers: {'X-API-Key': 'changeme'}});
 var Docker = require('dockerode');
 var docker = new Docker();
+var mqtt = require('mqtt')
+var uuid = require('uuid/v4');
 
 
+var myuuid = uuid();
 var server_pid = 0;
 var myIP = process.env.myIP;
 console.log("My IP is: " + myIP);
+var mymqtt  = mqtt.connect('mqtt://' + myIP);
+var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
+mymqtt.on('connect', function(){
+    mymqtt.subscribe('servicediscovery');
+    mymqtt.publish('servicediscovery',JSON.stringify(servicedata));
+    }
+)
+
+mymqtt.on('message', function(topic, messagestr){
+        message = JSON.parse(messagestr);
+        switch(topic){
+            case 'svcdns-add':
+                  // Expect - {name: 'myservice', domain: "site.com", ip: "192.168.1.1", version: "v1"}
+                  zone = message.zone;
+                  domain = message.domain;
+                  ip = message.domain;
+                  console.log("svcdns-add: " + message);
+                  // BUG - We should see if domain exists and create it
+                  add_host(zone,hostname,ip,null);
+                  break;
+            default:
+               break;
+         }
+
+});
 
 
 // Start up server
