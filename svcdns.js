@@ -28,9 +28,10 @@ mymqtt.on('message', function(topic, messagestr){
         message = JSON.parse(messagestr);
         switch(topic){
             case 'svcdns-add':
-                  // Expect - {name: 'myservice', domain: "site.com", ip: "192.168.1.1", version: "v1"}
-                  zone = message.zone;
-                  domain = message.domain;
+                  // Expect - {name: 'myservice.site.com',ip: "192.168.1.1", version: "v1"}
+                  hostarray = message.name.split(".");
+                  hostname = hostarray.shift();
+                  zone = hostarray.join('.');
                   ip = message.domain;
                   console.log("svcdns-add: " + message);
                   // BUG - We should see if domain exists and create it
