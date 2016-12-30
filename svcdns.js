@@ -41,6 +41,9 @@ var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
                     zone += ".";
                     hostname += ".";
                     ip = message.ip;
+                    if  (zone == '.'){
+                        zone = 'nod.site.com.';
+                        }
                     console.log('svcdnsadd: ' + message);
                     console.log('svcdnsadd: ' + hostname  + ' zone: ' + zone + ' ip: ' + ip);
                     // BUG - We should see if domain exists and create it
@@ -139,7 +142,9 @@ function do_base_setup()
 var myIP = process.env.myIP;
 
 	add_zone("site.com.", null);
+        add_zone("nod.site.com.", null);
         setTimeout(add_host,2000,"site.com.","ns1.site.com.",myIP,null);
+        setTimeout(add_host,2000,"nod.site.com.","ns1.site.com.",myIP,null);
 }
 
 
