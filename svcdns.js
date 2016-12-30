@@ -14,36 +14,44 @@ var uuid = require('uuid/v4');
 
 var myuuid = uuid();
 var server_pid = 0;
+
+
+function mymqtt_server(){
 var myIP = process.env.myIP;
 console.log("My IP is: " + myIP);
 var mymqtt  = mqtt.connect('mqtt://' + myIP);
 var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
-mymqtt.on('connect', function(){
-    mymqtt.publish('servicediscovery',JSON.stringify(servicedata));
-    mymqtt.subscribe('svcdnsadd');
-    }
+
+	mymqtt.on('connect', function(){
+    	   mymqtt.publish('servicediscovery',JSON.stringify(servicedata));
+           mymqtt.subscribe('svcdnsadd');
+           }
 )
 
-mymqtt.on('message', function(topic, messagestr){
-        message = JSON.parse(messagestr);
-        console.log("MQTT: " + topic + " " + util.inspect(message));
-        switch(topic){
-            case 'svcdnsadd':
-                  // Expect - {name: 'myservice.site.com',ip: "192.168.1.1", version: "v1"}
-                  hostarray = message.name.split(".");
-                  hostname = hostarray.shift();
-                  zone = hostarray.join('.');
-                  ip = message.domain;
-                  console.log("svcdns-add: " + message);
-                  // BUG - We should see if domain exists and create it
-                  add_host(zone,hostname,ip,null);
-                  break;
-            default:
-               break;
-         }
+        mymqtt.on('message', function(topic, messagestr){
+           message = JSON.parse(messagestr);
+           console.log("MQTT: " + topic + " " + util.inspect(message));
+           switch(topic){
+              case 'svcdnsadd':
+                    // Expect - {name: 'myservice.site.com',ip: "192.168.1.1", version: "v1"}
+                    hostarray = message.name.split(".");
+                    hostname = message.name
+                    zone = hostarray.shift();
+                    zone = hostarray.join('.');
+                    zone += ".";
+                    hostname += ".";
+                    ip = message.ip;
+                    console.log('svcdnsadd: ' + message);
+                    console.log('svcdnsadd: ' + hostname  + ' zone: ' + zone + ' ip: ' + ip);
+                    // BUG - We should see if domain exists and create it
+                    add_host(zone,hostname,ip,null);
+                    break;
+               default:
+                    break;
+             }
 
-});
-
+           });
+}
 
 // Start up server
 function restart_server(data){
@@ -135,7 +143,8 @@ var myIP = process.env.myIP;
 }
 
 
-setTimeout(do_base_setup, 4000);
+setTimeout(do_base_setup, 3000);
+setTimeout(mymqtt_server, 6000); // Start after everything settle
 
 
 
