@@ -25,6 +25,7 @@ var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
 	mymqtt.on('connect', function(){
     	   mymqtt.publish('servicediscovery',JSON.stringify(servicedata));
            mymqtt.subscribe('svcdnsadd');
+           mymqtt.subscribe('svcdnssync');
            }
 )
 
@@ -43,11 +44,18 @@ var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
                     ip = message.ip;
                     if  (zone == '.'){
                         zone = 'nod.site.com.';
+                        hostname = hostname + zone;
                         }
                     console.log('svcdnsadd: ' + message);
                     console.log('svcdnsadd: ' + hostname  + ' zone: ' + zone + ' ip: ' + ip);
                     // BUG - We should see if domain exists and create it
                     add_host(zone,hostname,ip,null);
+                    break;
+               case 'svcdnssync':
+                    // Expect a: [{zone: "site.com.", name: "svcdns.site.com.", ip: "192.168.1.170"},...]
+                    message.a.forEach(function(e){
+                         add_host(e.zone, e.name, e.ip); 
+                         });
                     break;
                default:
                     break;
@@ -144,7 +152,7 @@ var myIP = process.env.myIP;
 	add_zone("site.com.", null);
         add_zone("nod.site.com.", null);
         setTimeout(add_host,2000,"site.com.","ns1.site.com.",myIP,null);
-        setTimeout(add_host,2000,"nod.site.com.","ns1.site.com.",myIP,null);
+        setTimeout(add_host,2000,"nod.site.com.","ns1.nod.site.com.",myIP,null);
 }
 
 
