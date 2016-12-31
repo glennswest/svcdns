@@ -10,30 +10,29 @@ var Docker = require('dockerode');
 var docker = new Docker();
 var mqtt = require('mqtt')
 var uuid = require('uuid/v4');
-
-
 var myuuid = uuid();
 var server_pid = 0;
 
+work_q = [];
+
+function process_work(){
+	e = work_q.pop();
+        if (!e) return;
+        console.log(util.inspect(e));
+        console.log("process_work: Adding: " + e.name);
+        add_host(e.zone, e.name, e.ip, process_work());
+}
 
 function mymqtt_server(){
 var myIP = process.env.myIP;
-console.log("My IP is: " + myIP);
-var mymqtt  = mqtt.connect('mqtt://' + myIP);
 var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
 
-	mymqtt.on('connect', function(){
-    	   mymqtt.publish('servicediscovery',JSON.stringify(servicedata));
-           mymqtt.subscribe('svcdnsadd');
-           mymqtt.subscribe('svcdnssync');
-           }
-)
-
-        mymqtt.on('message', function(topic, messagestr){
-           message = JSON.parse(messagestr);
-           console.log("MQTT: " + topic + " " + util.inspect(message));
-           switch(topic){
-              case 'svcdnsadd':
+           var mymqtt  = mqtt.connect('mqtt://' + myIP);
+           mymqtt.on('message', function(topic, messagestr){
+              message = JSON.parse(messagestr);
+              console.log("MQTT: " + topic + " " + util.inspect(message));
+              switch(topic){
+                 case 'svcdnsadd':
                     // Expect - {name: 'myservice.site.com',ip: "192.168.1.1", version: "v1"}
                     hostarray = message.name.split(".");
                     hostname = message.name
@@ -51,17 +50,24 @@ var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
                     // BUG - We should see if domain exists and create it
                     add_host(zone,hostname,ip,null);
                     break;
-               case 'svcdnssync':
+                 case 'svcdnssync':
                     // Expect a: [{zone: "site.com.", name: "svcdns.site.com.", ip: "192.168.1.170"},...]
+                    console.log("svcdnssync: " + util.inspect(message.a));
                     message.a.forEach(function(e){
-                         add_host(e.zone, e.name, e.ip); 
+                         work_q.push(e);
                          });
+                    process_work();
                     break;
-               default:
+                 default:
                     break;
              }
 
            });
+        console.log("Publish Service Discovery Message - " + util.inspect(servicedata));
+    	mymqtt.publish('servicediscovery',JSON.stringify(servicedata));
+        mymqtt.subscribe('svcdnsadd');
+        mymqtt.subscribe('svcdnsadd');
+        mymqtt.subscribe('svcdnssync');
 }
 
 // Start up server
@@ -141,8 +147,9 @@ function add_host(zone,hostname,ip,next){
         console.log(util.inspect(url));
 	result = client.patch(url, thedata, function(err, req, res){
             console.log(util.inspect(err));
+            return(next);
             });
-       return(next);
+       return;
 }
 
 function do_base_setup()
@@ -157,7 +164,7 @@ var myIP = process.env.myIP;
 
 
 setTimeout(do_base_setup, 3000);
-setTimeout(mymqtt_server, 6000); // Start after everything settle
+setTimeout(mymqtt_server, 7000); // Start after everything settle
 
 
 
