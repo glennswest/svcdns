@@ -1,8 +1,6 @@
 #FROM mhart/alpine-node:base-6
 FROM mhart/alpine-node:6
 
-ARG HAPROXY_VERSION
-ENV HAPROXY_VERSION ${HAPROXY_VERSION}
 
 RUN sed -i -e 's/v3\.4/v3.5/g' /etc/apk/repositories \
         && apk update \
