@@ -14,6 +14,7 @@ var myuuid = uuid();
 var server_pid = 0;
 
 work_q = [];
+zones = [];
 
 function process_work(){
 	e = work_q.pop();
@@ -109,7 +110,16 @@ function respond(req, res, next) {
   next();
 }
 
-function add_zone(zonename){
+function rid_end_dot(name){
+	if (name.slice(-1) == '.'){
+           name  = name.slice(0,-1);
+           return name;
+         } else {
+           return name;
+           }
+}
+
+function add_zone(zonename,next){
 
    thezone = {};
    ns = [];
@@ -119,13 +129,26 @@ function add_zone(zonename){
    thezone.kind = "Native";
    thezone.masters = [];
    thezone.nameservers = ns;
+   console.log("add_zone: " + zonename);
+   zones.push(rid_end_dot(zonename));
+   
 
    result = client.post('/api/v1/servers/localhost/zones', thezone, function(err, req, res){
         console.log(util.inspect(err));
+        if (next) setTimeout(next,1000);
         });
 }
 
 function add_host(zone,hostname,ip,next){
+        console.log("add_host: " + util.inspect(zones));
+        if (zones.indexOf(rid_end_dot(zone)) == -1){ // No zone
+           // Automatically add zone
+           //zones.push(rid_end_dot(zone));
+           add_zone(zone,function(){
+                         add_host(zone,hostname,ip,null);
+                         });
+           return;
+           }
 	thedata = {};
 	thehost = {};
 	therecord = {};

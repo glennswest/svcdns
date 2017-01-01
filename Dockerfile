@@ -30,9 +30,10 @@ COPY . /usr/src/app
 COPY svcdns.sh /usr/src/app
 
 
-EXPOSE 8081
 EXPOSE 9053
 EXPOSE 53
+EXPOSE 8081
+
 CMD ["ash","./svcdns.sh"]
 #CMD ["node", "svcdns.js"]
 #CMD ["/usr/sbin/pdns_server"]
