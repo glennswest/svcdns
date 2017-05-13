@@ -13,8 +13,26 @@ var uuid = require('uuid/v4');
 var myuuid = uuid();
 var server_pid = 0;
 
+var myDomain = "site.com.";
+
 work_q = [];
 zones = [];
+
+function get_line(filename, line_no){
+    var data = fs.readFileSync(filename, 'utf8');
+    var lines = data.split("\n");
+
+    if(+line_no > lines.length){
+      throw new Error('File end reached without finding line');
+    }
+
+    return(lines[+line_no]);
+}
+
+if (fs.existsSync("/data/domain")){
+   myDomain = get_line('/data/domain', 0) + ".";
+   console.log("Domain Set To: " + myDomain);
+   }
 
 function process_work(){
 	e = work_q.pop();
@@ -43,7 +61,7 @@ var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
                     hostname += ".";
                     ip = message.ip;
                     if  (zone == '.'){
-                        zone = 'nod.site.com.';
+                        zone = myDomain;
                         hostname = hostname + zone;
                         }
                     console.log('svcdnsadd: ' + message);
@@ -186,10 +204,9 @@ function do_base_setup()
 {
 var myIP = process.env.myIP;
 
-	add_zone("site.com.", null);
-        add_zone("nod.site.com.", null);
-        setTimeout(add_host,2000,"site.com.","ns1.site.com.",myIP,null);
-        setTimeout(add_host,2000,"nod.site.com.","ns1.nod.site.com.",myIP,null);
+	add_zone(myDomain, null);
+        ns1name = "ns1." + myDomain;
+        setTimeout(add_host,2000,myDomain,ns1name,myIP,null);
 }
 
 
