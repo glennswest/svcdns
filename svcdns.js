@@ -81,6 +81,7 @@ function restart_server(data){
           }
         if (!fs.existsSync("/data/powerdns.sqlite")) {
            console.log("Create base PowerDNS Database");
+           fssync.copy("/etc/pdns/pdns.conf", "/data/pdns.conf");
            fssync.copy("/etc/pdns/powerdns.sqlite", "/data/powerdns.sqlite");
            fs.chmodSync("/data/powerdns.sqlite", 0777);
            console.log("Database Copied Successful");
