@@ -79,7 +79,13 @@ function restart_server(data){
           } else {
            console.log("PDNS - " + data + "Restarting");
           }
-        child = execFile('/usr/sbin/pdns_server',[], {cwd: "/etc/pdns"}, (error, stdout, stderr) => {
+        if (!fs.existsSync("/data/powerdns.sqlite")) {
+           console.log("Create base PowerDNS Database");
+           fssync.copy("/etc/pdns/powerdns.sqlite", "/data/powerdns.sqlite");
+           fs.chmodSync("/data/powerdns.sqlite", 0777);
+           console.log("Database Copied Successful");
+           }
+        child = execFile('/usr/sbin/pdns_server',[], {cwd: "/data"}, (error, stdout, stderr) => {
                 if (error){
                    console.log(stderr);
                    console.log("Error On Exec: " + util.inspect(error) + "");
