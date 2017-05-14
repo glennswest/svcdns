@@ -184,7 +184,7 @@ function add_host(zone,hostname,ip,next){
         thecontent[0] = thecontentrecord;
 	thehost.name = hostname;
 	thehost.type = "A";
-	thehost.ttl = 86400;
+	thehost.ttl = 3600;
 	thehost.changetype="REPLACE";
 	thehost.records = thecontent;
 	thedata.rrsets = [];
