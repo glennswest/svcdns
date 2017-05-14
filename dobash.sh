@@ -1,2 +1,2 @@
-docker exec -i -t svcdns.site.com /bin/bash
+docker exec -i -t dns.ncc9.com /bin/sh
 
