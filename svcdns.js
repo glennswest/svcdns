@@ -148,13 +148,14 @@ function add_zone(zonename,next){
 
    thezone = {};
    ns = [];
-   thename = 'ns1.' + zonename;
+   thename = 'dns.' + zonename;
    ns.push(thename);
    thezone.name = zonename;
    thezone.kind = "Native";
    thezone.masters = [];
    thezone.nameservers = ns;
    console.log("add_zone: " + zonename);
+   console.log(util.inspect(thezone));
    zones.push(rid_end_dot(zonename));
    
 
@@ -205,7 +206,7 @@ function do_base_setup()
 var myIP = process.env.myIP;
 
 	add_zone(myDomain, null);
-        ns1name = "ns1." + myDomain;
+        ns1name = "dns." + myDomain;
         setTimeout(add_host,2000,myDomain,ns1name,myIP,null);
 }
 
