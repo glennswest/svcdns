@@ -5,17 +5,20 @@ var util=require('util');
 var process=require('process');
 var execFile=require('child_process').execFile;
 var restify = require('restify');
-var client = restify.createJsonClient({url: 'http://127.0.0.1:8081',headers: {'X-API-Key': 'changeme'}});
 var Docker = require('dockerode');
 var docker = new Docker();
 var mqtt = require('mqtt')
 var uuid = require('uuid/v4');
 var myuuid = uuid();
 var server_pid = 0;
+var queue = require('queue');
 
 var myDomain = "site.com.";
+var work_q = queue(concurrency=1,autostart=1);
+work_q.autostart = 1;
+work_q.concurrency=1;
 
-work_q = [];
+
 zones = [];
 
 function get_line(filename, line_no){
@@ -34,12 +37,16 @@ if (fs.existsSync("/data/domain")){
    console.log("Domain Set To: " + myDomain);
    }
 
-function process_work(){
-	e = work_q.pop();
-        if (!e) return;
-        console.log(util.inspect(e));
-        console.log("process_work: Adding: " + e.name);
-        add_host(e.zone, e.name, e.ip, process_work());
+
+
+function worker_add_host(e)
+{
+   return function (cb) {
+        console.log("Worker_add_host");
+	console.log(util.inspect(e));
+        add_host(e.zone, e.name, e.ip);
+        cb();
+        }
 }
 
 function mymqtt_server(){
@@ -64,18 +71,26 @@ var servicedata = {name: "svcdns",ip: myIP, id: myuuid, version: "v1"};
                         zone = myDomain;
                         hostname = hostname + zone;
                         }
-                    console.log('svcdnsadd: ' + message);
+                    console.log('svcdnsadd: ' + util.inspect(message));
                     console.log('svcdnsadd: ' + hostname  + ' zone: ' + zone + ' ip: ' + ip);
                     // BUG - We should see if domain exists and create it
-                    add_host(zone,hostname,ip,null);
+                    var e = {};
+                    e.zone = zone;
+                    e.name = hostname;
+                    e.ip   = ip;
+                    e.version = "v1";
+                    var w = worker_add_host(e);
+                    w.e = e;
+                    work_q.push(w);
                     break;
                  case 'svcdnssync':
                     // Expect a: [{zone: "site.com.", name: "svcdns.site.com.", ip: "192.168.1.170"},...]
                     console.log("svcdnssync: " + util.inspect(message.a));
                     message.a.forEach(function(e){
-                         work_q.push(e);
+                         var w = worker_add_host(e);
+                         w.e = e;
+                         work_q.push(w);
                          });
-                    process_work();
                     break;
                  default:
                     break;
@@ -136,6 +151,7 @@ function respond(req, res, next) {
 }
 
 function rid_end_dot(name){
+        console.log("rid_end_dot: " + name);
 	if (name.slice(-1) == '.'){
            name  = name.slice(0,-1);
            return name;
@@ -159,19 +175,32 @@ function add_zone(zonename,next){
    zones.push(rid_end_dot(zonename));
    
 
+   var client = restify.createJsonClient({url: 'http://127.0.0.1:8081', headers: {'X-API-Key': 'changeme'}});
    result = client.post('/api/v1/servers/localhost/zones', thezone, function(err, req, res){
+        console.log("Rest Complete: add_zone");
         console.log(util.inspect(err));
-        if (next) setTimeout(next,1000);
+        client.close();
+        if (next) setTimeout(next,5000);
         });
 }
 
 function add_host(zone,hostname,ip,next){
-        console.log("add_host: " + util.inspect(zones));
+        console.log("add_host: " + hostname + " zone: " + zone + " ip: " + ip);
+        if (typeof hostname == 'undefined'){
+           console.log("add_host: undefined host");
+           return;
+           }
+        if (hostname == null){
+           console.log("add_host: null host");
+           return;
+           }
         if (zones.indexOf(rid_end_dot(zone)) == -1){ // No zone
            // Automatically add zone
            //zones.push(rid_end_dot(zone));
            add_zone(zone,function(){
-                         add_host(zone,hostname,ip,null);
+                         setTimeout(function(zone,hostname,ip,next){
+                                             add_host(zone,hostname,ip,next);
+                                             },3000)
                          });
            return;
            }
@@ -194,9 +223,12 @@ function add_host(zone,hostname,ip,next){
         console.log(util.inspect(thehost.records));
         url = '/api/v1/servers/localhost/zones/' + zone;
         console.log(util.inspect(url));
+        var client = restify.createJsonClient({url: 'http://127.0.0.1:8081', headers: {'X-API-Key': 'changeme'}});
 	result = client.patch(url, thedata, function(err, req, res){
+            console.log("Rest Complete: add_host");
             console.log(util.inspect(err));
-            return(next);
+            client.close();
+            if (next) setTimeout(next,5000);
             });
        return;
 }
@@ -221,8 +253,10 @@ server.get('/check', sendOK);
 server.get('/hello/:name', respond);
 server.head('/hello/:name', respond);
 
+function showqsize()
+{
+	console.log("Queue Size: " + work_q.length + " Q Concurrency = " + work_q.concurrency);
+}
 
-server.listen(9053, function() {
-  console.log('%s listening at %s', server.name, server.url);
-});
+setInterval(showqsize,5000);
 

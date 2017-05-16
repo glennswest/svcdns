@@ -1,3 +1,5 @@
+docker stop dns.ncc9.com
+sleep 2
 docker kill dns.ncc9.com
 sleep 2
 docker rm dns.ncc9.com
