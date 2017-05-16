@@ -253,10 +253,4 @@ server.get('/check', sendOK);
 server.get('/hello/:name', respond);
 server.head('/hello/:name', respond);
 
-function showqsize()
-{
-	console.log("Queue Size: " + work_q.length + " Q Concurrency = " + work_q.concurrency);
-}
-
-setInterval(showqsize,5000);
 
