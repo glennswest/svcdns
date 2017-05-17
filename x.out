@@ -1,0 +1,111 @@
+147.75.111.55
+Wed May 17 2017 23:35:53 GMT+0800 (SGT) Domain Set To: ncc9.com.
+Wed May 17 2017 23:35:53 GMT+0800 (SGT) Starting PDNS
+Wed May 17 2017 23:35:53 GMT+0800 (SGT) Server PID= 18
+Wed May 17 2017 23:35:53 GMT+0800 (SGT) May 17 23:35:53 Reading random entropy from '/dev/urandom'
+May 17 23:35:53 Loading '/usr/lib/pdns/pdns/libgsqlite3backend.so'
+May 17 23:35:53 [gsqlite3] This is the gsqlite3 backend version 4.0.3 (Apr  3 2017 12:38:57) reporting
+May 17 23:35:53 This is a standalone pdns
+May 17 23:35:53 Listening on controlsocket in '/var/run/pdns.controlsocket'
+May 17 23:35:53 UDP server bound to 0.0.0.0:53
+May 17 23:35:53 UDPv6 server bound to [::]:53
+May 17 23:35:53 TCP server bound to 0.0.0.0:53
+May 17 23:35:53 TCPv6 server bound to [::]:53
+May 17 23:35:53 PowerDNS Authoritative Server 4.0.3 (C) 2001-2016 PowerDNS.COM BV
+May 17 23:35:53 Using 64-bits mode. Built using gcc 6.2.1 20160822 on Apr  3 2017 12:39:24 by buildozer@build-3-5-x86_64.
+May 17 23:35:53 PowerDNS comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it according to the terms of the GPL version 2.
+May 17 23:35:53 Set effective group id to 101
+May 17 23:35:53 Listening for HTTP requests on 127.0.0.1:8089
+May 17 23:35:53 Set effective user id to 100
+May 17 23:35:53 DNS Proxy launched, local port 43739, remote 8.8.8.8:53
+May 17 23:35:53 Doing stub resolving, using resolvers: 147.75.207.207, 147.75.207.208, 8.8.8.8
+May 17 23:35:53 Question got answered by 147.75.207.207
+May 17 23:35:53 Polled security status of version 4.0.3 at startup, no known issues reported: OK
+May 17 23:35:53 Creating backend connection for TCP
+May 17 23:35:53 gsqlite3: connection to 'powerdns.sqlite' successful
+May 17 23:35:53 About to create 3 backend threads for UDP
+May 17 23:35:53 gsqlite3: connection to 'powerdns.sqlite' successful
+May 17 23:35:53 gsqlite3: connection to 'powerdns.sqlite' successful
+May 17 23:35:53 gsqlite3: connection to 'powerdns.sqlite' successful
+May 17 23:35:53 Done launching threads, ready to distribute questions
+Wed May 17 2017 23:35:56 GMT+0800 (SGT) add_zone: ncc9.com.
+Wed May 17 2017 23:35:56 GMT+0800 (SGT) { name: 'ncc9.com.',
+  kind: 'Native',
+  masters: [],
+  nameservers: [ 'dns.ncc9.com.' ] }
+Wed May 17 2017 23:35:56 GMT+0800 (SGT) rid_end_dot: ncc9.com.
+Wed May 17 2017 23:35:58 GMT+0800 (SGT) add_host: dns.ncc9.com. zone: ncc9.com. ip: 147.75.111.55
+Wed May 17 2017 23:35:58 GMT+0800 (SGT) rid_end_dot: ncc9.com.
+Wed May 17 2017 23:35:58 GMT+0800 (SGT) { rrsets: 
+   [ { name: 'dns.ncc9.com.',
+       type: 'A',
+       ttl: 3600,
+       changetype: 'REPLACE',
+       records: [Object] } ] }
+Wed May 17 2017 23:35:58 GMT+0800 (SGT) [ { content: '147.75.111.55', disabled: false } ]
+Wed May 17 2017 23:35:58 GMT+0800 (SGT) '/api/v1/servers/localhost/zones/ncc9.com.'
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) Publish Service Discovery Message - { name: 'svcdns',
+  ip: '147.75.111.55',
+  id: '9e179af8-27d7-4b48-ae11-99fdcab1ddc4',
+  version: 'v1' }
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) MQTT: svcdnssync { a: 
+   [ { name: 'svcrouter.ncc9.com.',
+       zone: 'ncc9.com.',
+       ip: '147.75.111.55' },
+     { name: 'dns.ncc9.com.', zone: 'ncc9.com.', ip: '147.75.111.55' },
+     { name: 'test1.ncc9.com.',
+       zone: 'ncc9.com.',
+       ip: '147.75.111.55' },
+     { name: 'svcmqtt.ncc9.com.',
+       zone: 'ncc9.com.',
+       ip: '147.75.111.55' },
+     { name: 'login.ncc9.com.',
+       zone: 'ncc9.com.',
+       ip: '147.75.111.55' },
+     { name: 'dns.ncc9.com.', zone: 'ncc9.com.', ip: '147.75.111.55' },
+     { name: 'ctl.ncc9.com.', zone: 'ncc9.com.', ip: '147.75.111.55' },
+     { name: 'svcrouter.ncc9.com.',
+       zone: 'ncc9.com.',
+       ip: '147.75.111.55' } ] }
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) svcdnssync: [ { name: 'svcrouter.ncc9.com.',
+    zone: 'ncc9.com.',
+    ip: '147.75.111.55' },
+  { name: 'dns.ncc9.com.', zone: 'ncc9.com.', ip: '147.75.111.55' },
+  { name: 'test1.ncc9.com.',
+    zone: 'ncc9.com.',
+    ip: '147.75.111.55' },
+  { name: 'svcmqtt.ncc9.com.',
+    zone: 'ncc9.com.',
+    ip: '147.75.111.55' },
+  { name: 'login.ncc9.com.',
+    zone: 'ncc9.com.',
+    ip: '147.75.111.55' },
+  { name: 'dns.ncc9.com.', zone: 'ncc9.com.', ip: '147.75.111.55' },
+  { name: 'ctl.ncc9.com.', zone: 'ncc9.com.', ip: '147.75.111.55' },
+  { name: 'svcrouter.ncc9.com.',
+    zone: 'ncc9.com.',
+    ip: '147.75.111.55' } ]
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) Worker_add_host
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) { name: 'svcrouter.ncc9.com.',
+  zone: 'ncc9.com.',
+  ip: '147.75.111.55' }
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) add_host: svcrouter.ncc9.com. zone: ncc9.com. ip: 147.75.111.55
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) rid_end_dot: ncc9.com.
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) { rrsets: 
+   [ { name: 'svcrouter.ncc9.com.',
+       type: 'A',
+       ttl: 3600,
+       changetype: 'REPLACE',
+       records: [Object] } ] }
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) [ { content: '147.75.111.55', disabled: false } ]
+Wed May 17 2017 23:36:00 GMT+0800 (SGT) '/api/v1/servers/localhost/zones/ncc9.com.'
+Wed May 17 2017 23:36:01 GMT+0800 (SGT) MQTT: svcdnsadd { name: 'ctl.ncc9.com', ip: '147.75.111.55', version: 'v1' }
+Wed May 17 2017 23:36:01 GMT+0800 (SGT) svcdnsadd: { name: 'ctl.ncc9.com', ip: '147.75.111.55', version: 'v1' }
+Wed May 17 2017 23:36:01 GMT+0800 (SGT) svcdnsadd: ctl.ncc9.com. zone: ncc9.com. ip: 147.75.111.55
+Wed May 17 2017 23:36:01 GMT+0800 (SGT) MQTT: svcdnsadd { name: 'svcrouter.ncc9.com',
+  ip: '147.75.111.55',
+  version: 'v1' }
+Wed May 17 2017 23:36:01 GMT+0800 (SGT) svcdnsadd: { name: 'svcrouter.ncc9.com',
+  ip: '147.75.111.55',
+  version: 'v1' }
+Wed May 17 2017 23:36:01 GMT+0800 (SGT) svcdnsadd: svcrouter.ncc9.com. zone: ncc9.com. ip: 147.75.111.55

@@ -44,8 +44,7 @@ function worker_add_host(e)
    return function (cb) {
         console.log("Worker_add_host");
 	console.log(util.inspect(e));
-        add_host(e.zone, e.name, e.ip);
-        cb();
+        add_host(e.zone, e.name, e.ip,function(cb){console.log("Delay");setTimeout(cb,5000);});
         }
 }
 
@@ -175,7 +174,7 @@ function add_zone(zonename,next){
    zones.push(rid_end_dot(zonename));
    
 
-   var client = restify.createJsonClient({url: 'http://127.0.0.1:8081', headers: {'X-API-Key': 'changeme'}});
+   var client = restify.createJsonClient({url: 'http://127.0.0.1:8081', agent: false, headers: {'X-API-Key': 'changeme'}});
    result = client.post('/api/v1/servers/localhost/zones', thezone, function(err, req, res){
         console.log("Rest Complete: add_zone");
         console.log(util.inspect(err));
@@ -197,12 +196,12 @@ function add_host(zone,hostname,ip,next){
         if (zones.indexOf(rid_end_dot(zone)) == -1){ // No zone
            // Automatically add zone
            //zones.push(rid_end_dot(zone));
-           add_zone(zone,function(){
-                         setTimeout(function(zone,hostname,ip,next){
-                                             add_host(zone,hostname,ip,next);
-                                             },3000)
-                         });
-           return;
+           //add_zone(zone,function(){
+           //              setTimeout(function(zone,hostname,ip,next){
+           //                                  add_host(zone,hostname,ip,next);
+           //                                  },3000)
+           //              });
+           //return;
            }
 	thedata = {};
 	thehost = {};
@@ -228,7 +227,7 @@ function add_host(zone,hostname,ip,next){
             console.log("Rest Complete: add_host");
             console.log(util.inspect(err));
             client.close();
-            if (next) setTimeout(next,5000);
+            if (next) next();
             });
        return;
 }
