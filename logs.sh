@@ -1,1 +1,1 @@
-docker logs svcdns.site.com
+docker logs dns.ncc9.com
