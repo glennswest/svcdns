@@ -181,7 +181,7 @@ function add_zone(zonename,next){
         console.log("Rest Complete: add_zone");
         console.log(util.inspect(err));
         client.close();
-        if (next) setTimeout(next,5000);
+        if (next) setTimeout(next,500);
         });
 }
 
@@ -232,7 +232,7 @@ function add_host(zone,hostname,ip,next){
             console.log("Rest Complete: add_host");
             console.log(util.inspect(err));
             client.close();
-            if (next) setTimeout(next,5000);
+            if (next) setTimeout(next,500);
             });
        return;
 }
