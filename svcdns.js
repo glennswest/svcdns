@@ -17,7 +17,8 @@ var myDomain = "site.com.";
 var work_q = queue(concurrency=1,autostart=1);
 work_q.autostart = 1;
 work_q.concurrency=1;
-work_q.timeout = 10000;
+work_q.timeout = 1000000;
+
 
 zones = [];
 
@@ -174,7 +175,8 @@ function add_zone(zonename,next){
    zones.push(rid_end_dot(zonename));
    
 
-   var client = restify.createJsonClient({url: 'http://127.0.0.1:8081', retry: { 'retries' : 20 }, headers: {'X-API-Key': 'changeme'}});
+   //var client = restify.createJsonClient({url: 'http://127.0.0.1:8089', retry: { 'retries' : 20 }, headers: {'X-API-Key': 'changeme'}});
+   var client = restify.createJsonClient({url: 'http://127.0.0.1:8089', headers: {'X-API-Key': 'changeme'}});
    result = client.post('/api/v1/servers/localhost/zones', thezone, function(err, req, res){
         console.log("Rest Complete: add_zone");
         console.log(util.inspect(err));
@@ -183,6 +185,8 @@ function add_zone(zonename,next){
         });
 }
 
+//'{"rrsets": [ {"name": "test.example.org", "type": "A", "changetype": "REPLACE", "records": 
+// [ {"content": "192.168.9.9", "disabled": false, "name": "test.example.org", "ttl": 86400, "type": "A", "priority": 0 } ] } ] }' 
 function add_host(zone,hostname,ip,next){
         console.log("add_host: " + hostname + " zone: " + zone + " ip: " + ip);
         if (typeof hostname == 'undefined'){
@@ -195,7 +199,7 @@ function add_host(zone,hostname,ip,next){
            }
         if (zones.indexOf(rid_end_dot(zone)) == -1){ // No zone
            // Automatically add zone
-           zones.push(rid_end_dot(zone));
+           //zones.push(rid_end_dot(zone));
            add_zone(zone,function(){
                          setTimeout(function(zone,hostname,ip,next){
                                              add_host(zone,hostname,ip,next);
@@ -222,12 +226,13 @@ function add_host(zone,hostname,ip,next){
         console.log(util.inspect(thehost.records));
         url = '/api/v1/servers/localhost/zones/' + zone;
         console.log(util.inspect(url));
-        var client = restify.createJsonClient({url: 'http://127.0.0.1:8081', agent: false, retry: { 'retries' : 10 }, headers: {'X-API-Key': 'changeme'}});
+        //var client = restify.createJsonClient({url: 'http://127.0.0.1:8089', retry: { 'retries' : 20 }, headers: {'X-API-Key': 'changeme'}});
+        var client = restify.createJsonClient({url: 'http://127.0.0.1:8089', headers: {'X-API-Key': 'changeme'}});
 	result = client.patch(url, thedata, function(err, req, res){
             console.log("Rest Complete: add_host");
             console.log(util.inspect(err));
             client.close();
-            if (next) next();
+            if (next) setTimeout(next,5000);
             });
        return;
 }
@@ -251,5 +256,6 @@ var server = restify.createServer();
 server.get('/check', sendOK);
 server.get('/hello/:name', respond);
 server.head('/hello/:name', respond);
+
 
 
