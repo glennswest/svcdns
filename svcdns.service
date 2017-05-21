@@ -1,6 +1,6 @@
 [Unit]
 Description=svcdns container
-After=docker.service
+After=svcmqtt.service
 
 [Service]
 Restart=always
