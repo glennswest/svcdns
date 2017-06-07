@@ -125,7 +125,7 @@ function restart_server(data){
                    console.log("Error On Exec: " + util.inspect(error) + "");
                    }
                 console.log(stdout);
-                //restart_server("Restarting PDNS");
+                restart_server("Restarting PDNS");
                 });
         console.log("Server PID= " + util.inspect(child.pid) + "");
         child.stderr.on('data',function(data){
